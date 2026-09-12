@@ -54,8 +54,9 @@ Dự án này là hệ thống điều khiển firmware thời gian thực dành
 
 ---
 
-## 4. Tác Giả & Bản Quyền
+## 4. Tác Giả, Kế Thừa & Bản Quyền
 
 - **Author:** Trần Nguyên Bình ([trannguyenbinh.shark@gmail.com](mailto:trannguyenbinh.shark@gmail.com))
 - **Website:** [https://nguyenbinh-shark.github.io/](https://nguyenbinh-shark.github.io/)
+- **Tham khảo & Kế thừa:** Dự án được phát triển dựa trên việc nghiên cứu và nâng cấp từ repository mã nguồn mở [dmBots/wheel-legged](https://github.com/dmBots/wheel-legged) của Damiao (dmBots).
 - **License:** [MIT License](LICENSE)

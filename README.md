@@ -30,14 +30,15 @@
 ## 📑 Table of Contents
 - [1. Project Overview](#1-project-overview)
 - [2. Key Features](#2-key-features)
-- [3. System Architecture](#3-system-architecture)
-- [4. Hardware Specifications & Pinout](#4-hardware-specifications--pinout)
-- [5. Actuator Configuration (CAN Bus)](#5-actuator-configuration-can-bus)
-- [6. Control Theory & Mathematical Models](#6-control-theory--mathematical-models)
-- [7. Communication & Control Interfaces](#7-communication--control-interfaces)
-- [8. Build, Flashing & Debugging Guide](#8-build-flashing--debugging-guide)
-- [9. Repository Structure](#9-repository-structure)
-- [10. Author & License](#10-author--license)
+- [3. Provenance & Comparison with dmBots/wheel-legged](#3-provenance--comparison-with-dmbotswheel-legged)
+- [4. System Architecture](#4-system-architecture)
+- [5. Hardware Specifications & Pinout](#5-hardware-specifications--pinout)
+- [6. Actuator Configuration (CAN Bus)](#6-actuator-configuration-can-bus)
+- [7. Control Theory & Mathematical Models](#7-control-theory--mathematical-models)
+- [8. Communication & Control Interfaces](#8-communication--control-interfaces)
+- [9. Build, Flashing & Debugging Guide](#9-build-flashing--debugging-guide)
+- [10. Repository Structure](#10-repository-structure)
+- [11. Author, Acknowledgments & License](#11-author-acknowledgments--license)
 
 ---
 
@@ -61,7 +62,22 @@ The robot operates with two symmetrical five-bar articulated legs, each driven b
 
 ---
 
-## 3. System Architecture
+## 3. Provenance & Comparison with dmBots/wheel-legged
+
+This project originates from study and benchmarking of the open-source repository [dmBots/wheel-legged](https://github.com/dmBots/wheel-legged) (created by Damiao / dmBots). While referencing the foundational five-bar leg layout and Damiao CAN communication paradigm, **DM-jump** significantly evolves the firmware with major architectural redesigns and new capabilities:
+
+| Feature / Subsystem | Reference Base (`dmBots/wheel-legged`) | DM-jump (This Project) |
+|:---|:---|:---|
+| **Jumping Dynamics** | Basic wheeled locomotion & height adjustment only | **Autonomous 4-Phase Jump State Machine** (`Crouch` $\rightarrow$ `Thrust` $\rightarrow$ `Flight` $\rightarrow$ `Soft Landing`) with coordinated VMC extension |
+| **IMU Thermal Drift** | Unregulated sensor temperature; susceptible to cold/hot bias drift | **Active Closed-Loop PID Thermal Control** maintaining IMU at ~40°C via TIM12 PWM MOSFET |
+| **Attitude Fusion** | Baseline complementary / raw filter at lower update rates | **1000Hz Dual Estimation Engine:** Mahony AHRS + Quaternion EKF via 10MHz SPI |
+| **Telemetry & Host Automation** | Proprietary or raw debug output | **Standardized ASCII Command Protocol** + 50Hz odometry telemetry feedback (`F<v>,<x>,<yaw>,<yaw_rate>`) ready for ROS/ROS 2 & Python |
+| **Input Flexibility** | PS2 gamepad exclusive | **Unified Dual-Mode Control:** Concurrent wireless PS2 gamepad and high-speed UART automation |
+| **Software Quality** | Legacy Chinese comments, build artifacts tracked in git | **Clean Professional Standard:** Full bilingual (EN/VI) Doxygen, zero compiler warnings (Keil ARMCC), strict `.editorconfig` & `.clang-format` |
+
+---
+
+## 4. System Architecture
 
 Firmware tasks run concurrently under **FreeRTOS v10**, decoupled into priority-scheduled modules:
 
@@ -111,7 +127,7 @@ flowchart TD
 
 ---
 
-## 4. Hardware Specifications & Pinout
+## 5. Hardware Specifications & Pinout
 
 ### Microcontroller (MCU)
 - **Part Number:** `STM32H723VGT6` (LQFP-100 package)
@@ -135,7 +151,7 @@ flowchart TD
 
 ---
 
-## 5. Actuator Configuration (CAN Bus)
+## 6. Actuator Configuration (CAN Bus)
 
 | Joint / Actuator Location | CAN Bus | Transmit ID (Master $\rightarrow$ Motor) | Receive ID (Motor $\rightarrow$ Master) |
 |:---|:---:|:---:|:---:|
@@ -148,7 +164,7 @@ flowchart TD
 
 ---
 
-## 6. Control Theory & Mathematical Models
+## 7. Control Theory & Mathematical Models
 
 ### 1. Five-Bar Linkage Kinematics
 Each leg is modeled as a planar closed kinematic chain:
@@ -170,7 +186,7 @@ $$\tau_{\text{wheel}} = -K_{\text{LQR}} x$$
 
 ---
 
-## 7. Communication & Control Interfaces
+## 8. Communication & Control Interfaces
 
 ### ASCII Command Set (USART1 @ 115200 baud)
 
@@ -217,7 +233,7 @@ ser.close()
 
 ---
 
-## 8. Build, Flashing & Debugging Guide
+## 9. Build, Flashing & Debugging Guide
 
 1. **Toolchain Requirements:**
    - [Keil MDK-ARM v5.30+](https://www.keil.com/download/product/)
@@ -232,7 +248,7 @@ ser.close()
 
 ---
 
-## 9. Repository Structure
+## 10. Repository Structure
 
 ```text
 DM-jump/
@@ -262,13 +278,14 @@ DM-jump/
 
 ---
 
-## 10. Author & License
+## 11. Author, Acknowledgments & License
 
 - **Author:** **Trần Nguyên Bình**
 - **Email:** [trannguyenbinh.shark@gmail.com](mailto:trannguyenbinh.shark@gmail.com)
 - **Personal Website:** [https://nguyenbinh-shark.github.io/](https://nguyenbinh-shark.github.io/)
 - **GitHub Profile:** [@nguyenbinh-shark](https://github.com/nguyenbinh-shark)
 - **Project Repository:** [https://github.com/nguyenbinh-shark/DM-jump](https://github.com/nguyenbinh-shark/DM-jump)
+- **Reference & Inspiration:** This project references and substantially enhances the open-source work by [dmBots/wheel-legged](https://github.com/dmBots/wheel-legged).
 
 Distributed under the **[MIT License](LICENSE)**. Copyright © 2024–2026 Trần Nguyên Bình.
 
@@ -281,14 +298,15 @@ Distributed under the **[MIT License](LICENSE)**. Copyright © 2024–2026 Trầ
 ## 📑 Mục Lục
 - [1. Tổng Quan Dự Án](#1-tổng-quan-dự-án-1)
 - [2. Tính Năng Nổi Bật](#2-tính-năng-nổi-bật)
-- [3. Kiến Trúc Phần Mềm & RTOS](#3-kiến-trúc-phần-mềm--rtos)
-- [4. Phần Cứng & Sơ Đồ Chân](#4-phần-cứng--sơ-đồ-chân-1)
-- [5. Phân Bổ ID Động Cơ FDCAN](#5-phân-bổ-id-động-cơ-fdcan)
-- [6. Cơ Sở Lý Thuyết & Thuật Toán](#6-cơ-sở-lý-thuyết--thuật-toán)
-- [7. Giao Thức Điều Khiển & Telemetry](#7-giao-thức-điều-khiển--telemetry)
-- [8. Hướng Dẫn Biên Dịch & Nạp Code](#8-hướng-dẫn-biên-dịch--nạp-code)
-- [9. Cấu Trúc Thư Mục](#9-cấu-trúc-thư-mục)
-- [10. Thông Tin Tác Giả & Bản Quyền](#10-thông-tin-tác-giả--bản-quyền)
+- [3. Nguồn Gốc & Sự Khác Biệt So Với dmBots/wheel-legged](#3-nguồn-gốc--sự-khác-biệt-so-với-dmbotswheel-legged)
+- [4. Kiến Trúc Phần Mềm & RTOS](#4-kiến-trúc-phần-mềm--rtos)
+- [5. Phần Cứng & Sơ Đồ Chân](#5-phần-cứng--sơ-đồ-chân-1)
+- [6. Phân Bổ ID Động Cơ FDCAN](#6-phân-bổ-id-động-cơ-fdcan)
+- [7. Cơ Sở Lý Thuyết & Thuật Toán](#7-cơ-sở-lý-thuyết--thuật-toán)
+- [8. Giao Thức Điều Khiển & Telemetry](#8-giao-thức-điều-khiển--telemetry)
+- [9. Hướng Dẫn Biên Dịch & Nạp Code](#9-hướng-dẫn-biên-dịch--nạp-code)
+- [10. Cấu Trúc Thư Mục](#10-cấu-trúc-thư-mục)
+- [11. Tác Giả, Lời Cảm Ơn & Bản Quyền](#11-tác-giả-lời-cảm-ơn--bản-quyền)
 
 ---
 
@@ -312,7 +330,22 @@ Toàn bộ hệ thống cơ khí chân robot được thiết kế theo cơ cấ
 
 ---
 
-## 3. Kiến Trúc Phần Mềm & RTOS
+## 3. Nguồn Gốc & Sự Khác Biệt So Với dmBots/wheel-legged
+
+Dự án này được nghiên cứu và phát triển dựa trên nền tảng mã nguồn mở [dmBots/wheel-legged](https://github.com/dmBots/wheel-legged) của hãng Damiao (dmBots). Kế thừa cơ cấu 5 khâu và giao thức CAN Damiao, **DM-jump** đã tiến hành tái thiết kế toàn diện, nâng cấp kiến trúc phần mềm và tích hợp hàng loạt tính năng vượt trội:
+
+| Tính năng / Module | Bản gốc (`dmBots/wheel-legged`) | Bản phát triển DM-jump |
+|:---|:---|:---|
+| **Khả năng bật nhảy** | Chỉ có chế độ di chuyển bánh xe & co duỗi chân cơ bản | **Máy trạng thái bật nhảy tự hành 4 pha** (`Crouch` $\rightarrow$ `Thrust` $\rightarrow$ `Flight` $\rightarrow$ `Soft Landing`), tự động điều tiết lực ảo VMC và hãm bánh trên không |
+| **Kiểm soát nhiệt độ IMU**| Không có mạch sấy, dễ trôi điểm 0 khi nhiệt độ môi trường thay đổi | **Mạch sấy chủ động khép kín PID** giữ nhiệt độ chip BMI088 ổn định ở ~40°C qua PWM MOSFET (TIM12) |
+| **Ước lượng tư thế (AHRS)** | Bộ lọc bù cơ bản tần số thấp | **Hệ thống kép 1000Hz:** Kết hợp Mahony AHRS và Quaternion EKF qua giao tiếp SPI 10MHz |
+| **Giao tiếp PC / ROS** | Giao thức thủ công hạn chế | **Giao thức UART1 mã lệnh ASCII an toàn đa luồng** (Queue/Mutex) kèm luồng telemetry phản hồi 50Hz (`F...`) phục vụ ROS/ROS 2 và Python |
+| **Phương thức điều khiển** | Chỉ dùng tay cầm PS2 | **Điều khiển kép linh hoạt:** Vận hành song song tay cầm không dây PS2 và cổng serial tốc độ cao |
+| **Chuẩn hóa mã nguồn** | Chú thích tiếng Trung lẫn ký tự lỗi, nhiều file build rác | **Chuẩn mã nguồn cao:** 100% chú thích song ngữ Anh - Việt chuẩn Doxygen, loại bỏ mã lỗi, tuân thủ `.clang-format` và biên dịch tuyệt đối 0 cảnh báo |
+
+---
+
+## 4. Kiến Trúc Phần Mềm & RTOS
 
 Hệ thống được tổ chức phân tầng trên nền tảng **FreeRTOS v10**:
 - **INS Task (1000Hz - Realtime Priority):** Đọc cảm biến SPI, tính toán AHRS Quaternion, điều khiển mạch sấy IMU.
@@ -323,7 +356,7 @@ Hệ thống được tổ chức phân tầng trên nền tảng **FreeRTOS v10
 
 ---
 
-## 4. Phần Cứng & Sơ Đồ Chân
+## 5. Phần Cứng & Sơ Đồ Chân
 
 ### Thông số phần cứng trung tâm
 - **Vi điều khiển:** `STM32H723VGT6` (LQFP-100)
@@ -347,7 +380,7 @@ Hệ thống được tổ chức phân tầng trên nền tảng **FreeRTOS v10
 
 ---
 
-## 5. Phân Bổ ID Động Cơ FDCAN
+## 6. Phân Bổ ID Động Cơ FDCAN
 
 | Vị trí khớp động cơ | Bus CAN | Transmit ID (Gửi lệnh) | Receive ID (Nhận phản hồi) |
 |:---|:---:|:---:|:---:|
@@ -360,7 +393,7 @@ Hệ thống được tổ chức phân tầng trên nền tảng **FreeRTOS v10
 
 ---
 
-## 6. Cơ Sở Lý Thuyết & Thuật Toán
+## 7. Cơ Sở Lý Thuyết & Thuật Toán
 
 ### 1. Động học cơ cấu 5 khâu kín
 Chân robot là hệ đa thanh 5 khâu đối xứng:
@@ -382,12 +415,12 @@ $$\tau_{\text{wheel}} = -K_{\text{LQR}} x$$
 
 ---
 
-## 7. Giao Thức Điều Khiển & Telemetry
+## 8. Giao Thức Điều Khiển & Telemetry
 
 ### Bảng mã lệnh UART1 (115200 baud, 8N1)
 
 | Lệnh | Ý nghĩa | Đơn vị | Hệ số nhân | Ví dụ | Diễn giải |
-|:---:|:---|:---:|:---:|:---|:---|
+|:---:|:---|:---:|:---|:---|
 | `E1` / `E0` | Cho phép / Khóa động cơ | Boolean | - | `E1\n` | Bật hệ thống cân bằng |
 | `Vxxx` | Vận tốc tiến / lùi | m/s | $\times 1000$ | `V600\n` | Đi tiến 0.6 m/s |
 | `Yxxx` | Vận tốc quay Yaw | rad/s | $\times 1000$ | `Y300\n` | Quay phải 0.3 rad/s |
@@ -405,7 +438,7 @@ Ví dụ: F0.523,1.234,0.785,0.100
 
 ---
 
-## 8. Hướng Dẫn Biên Dịch & Nạp Code
+## 9. Hướng Dẫn Biên Dịch & Nạp Code
 
 1. **Yêu cầu công cụ:**
    - [Keil MDK-ARM v5.30+](https://www.keil.com/download/product/)
@@ -420,7 +453,7 @@ Ví dụ: F0.523,1.234,0.785,0.100
 
 ---
 
-## 9. Cấu Trúc Thư Mục
+## 10. Cấu Trúc Thư Mục
 
 ```text
 DM-jump/
@@ -444,12 +477,13 @@ DM-jump/
 
 ---
 
-## 10. Thông Tin Tác Giả & Bản Quyền
+## 11. Tác Giả, Lời Cảm Ơn & Bản Quyền
 
 - **Tác giả (Author):** **Trần Nguyên Bình**
 - **Email:** [trannguyenbinh.shark@gmail.com](mailto:trannguyenbinh.shark@gmail.com)
 - **Trang thông tin cá nhân (Website):** [https://nguyenbinh-shark.github.io/](https://nguyenbinh-shark.github.io/)
 - **Hồ sơ GitHub:** [@nguyenbinh-shark](https://github.com/nguyenbinh-shark)
 - **Kho mã nguồn:** [https://github.com/nguyenbinh-shark/DM-jump](https://github.com/nguyenbinh-shark/DM-jump)
+- **Tham khảo & Tri ân:** Dự án được phát triển dựa trên việc nghiên cứu và nâng cấp toàn diện từ repository mã nguồn mở [dmBots/wheel-legged](https://github.com/dmBots/wheel-legged) của Damiao (dmBots).
 
-Phần mềm được phát hành theo giấy phép **[MIT License](LICENSE)**. Bản quyền © 2024–2026 Trần Nguyên Bình. Mọi hành vi kế thừa, phân phối lại xin vui lòng giữ nguyên thông tin tác giả và bản quyền.
+Phần mềm được phát hành theo giấy phép **[MIT License](LICENSE)**. Bản quyền © 2024–2026 Trần Nguyên Bình.
