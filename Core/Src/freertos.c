@@ -30,6 +30,7 @@
 #include "chassisL_task.h"
 #include "observe_task.h"
 #include "ps2_task.h"
+#include "app_uart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,6 +59,8 @@ osThreadId CHASSISL_TASKHandle;
 osThreadId OBSERVE_TASKHandle;
 osThreadId PS2_TASKHandle;
 
+QueueHandle_t uart1_rx_queue;
+SemaphoreHandle_t uart_data_mutex;
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 
@@ -84,6 +87,7 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
+  uart_data_mutex = xSemaphoreCreateMutex();
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -96,6 +100,7 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
+  uart1_rx_queue = xQueueCreate(64, sizeof(uint8_t));
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
@@ -125,6 +130,8 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+  osThreadDef(UART_TASK, UartTask, osPriorityAboveNormal, 0, 256);
+  osThreadCreate(osThread(UART_TASK), NULL);
   /* USER CODE END RTOS_THREADS */
 
 }

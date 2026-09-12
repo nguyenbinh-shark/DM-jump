@@ -23,6 +23,7 @@
 #include "fdcan.h"
 #include "spi.h"
 #include "tim.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -106,19 +107,21 @@ int main(void)
   MX_FDCAN2_Init();
   MX_TIM3_Init();
   MX_FDCAN3_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  HAL_UART_Receive_IT(&huart1, &uart1_rx_byte, 1);
 	DWT_Init(480);
-  
-    /* BMI088��ʼ�� *///֮ǰ�Ѿ��Խ��ٶȺͼ��ٶȵ���ƮУ׼���ˣ�����֮���ϵ�Ͳ���ҪУ׼�����Ӳ���豸����������Ҫ����У׼��
+    /* BMI088 initialization */
+    //Previously, the accelerometer and gyroscope of the BMI088 have been calibrated, so there is no need to calibrate the relationship between them. Other hardware devices need to be calibrated
   while (BMI088_init(&hspi2, 0) != BMI088_NO_ERROR)
 	{
 	  ;
 	}
-	Power_OUT1_ON;//imu��ʼ����ɣ��ɿص�Դ�򿪣�led����
+	Power_OUT1_ON;//imu initialization complete, power on the power supply and led
 	Power_OUT2_ON;
 	Power_OUT5V_ON;
 
-  FDCAN1_Config();//can��������ʼ��
+  FDCAN1_Config();//can initialization
 	FDCAN2_Config();
   /* USER CODE END 2 */
 
