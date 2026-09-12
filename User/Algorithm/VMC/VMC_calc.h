@@ -5,10 +5,10 @@
 #include "INS_task.h"
 
 #define pi 3.1415926f
-#define LEG_PID_KP  350.0f
+#define LEG_PID_KP  700.0f
 #define LEG_PID_KI  0.0f
-#define LEG_PID_KD  3000.0f
-#define LEG_PID_MAX_OUT  90.0f // 90 Nm (max torque output)
+#define LEG_PID_KD  2500.0f
+#define LEG_PID_MAX_OUT  130.0f // 130 Nm (max torque output)
 #define LEG_PID_MAX_IOUT 0.0f
 
 typedef struct

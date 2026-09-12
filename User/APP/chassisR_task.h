@@ -25,7 +25,7 @@
 #define ROLL_PID_MAX_OUT  100.0f//Roll axis maximum output
 #define ROLL_PID_MAX_IOUT 0.0f
 
-#define Mg 20.0f
+#define Mg 17.658f
 typedef struct
 {
   Joint_Motor_t joint_motor[4];
@@ -74,9 +74,10 @@ typedef struct
 	uint8_t jump_status_r;
 	uint8_t jump_status_l;
 
+	// Control mode: 0 = PS2, 1 = UART
+	uint8_t control_mode;
 	
 } chassis_t;
-
 
 extern void ChassisR_init(chassis_t *chassis,vmc_leg_t *vmc,PidTypeDef *legr);
 extern void ChassisR_task(void);

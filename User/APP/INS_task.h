@@ -77,6 +77,7 @@ extern void INS_task(void);
 
 void BodyFrameToEarthFrame(const float *vecBF, float *vecEF, float *q);
 void EarthFrameToBodyFrame(const float *vecEF, float *vecBF, float *q);
+float rad_to_deg(float rad);
 
 #endif
 

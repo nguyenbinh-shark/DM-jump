@@ -22,21 +22,22 @@
 #include "cmsis_os.h"
  
 float LQR_K_R[12]={ 
-   -6.30722928759530	,-0.696842887297413	,-2.14750226828115	,-1.96028779204492	,3.16000121531755	,0.352046989571068,
-    2.88563699845567	,0.321831107772386	,1.39325878380067	,1.18589341838622	,19.6627000823183	,0.927093573503157};
+   -5.11661395587923	,-0.696218875811963,	-2.21758581294137,	-1.99627529082690,	1.58419592732791	,0.204733182421384,
+		1.05342099102585,	0.125737489379163,	0.641533951717394,	0.517183568761030,	20.0319440884663,	0.635996438625759};
 	
-float Poly_Coefficient[12][4]={	{-254.842334407458	,178.727794135386,	-60.6919233036215	,-0.0855609578371201},
-																{10.3190286075056	,-4.21383212156545	,-3.67395339191993	,0.0149909485593972},
-																{-187.574261885913	,103.084830915149,	-20.0831869087043	,-0.766269544324169},
-																{-121.714551237559	,69.1627701939264,	-15.0353152797156	,-0.821274420672333},
-																{-279.503708963856	,238.311124550724,	-75.4693049740850	,10.8211229579575},
-																{-0.747949466312385,	6.46656432845197	,-3.51917331980557,	0.802189665749108},
-																{451.303971661993	,-197.027054972280	,20.5459194727689	,3.18497385998834},
-																{32.4234051197324	,-16.4431941217205	,2.56514203767398	,0.229800316375223},
-																{-149.488790812752,	127.122090472806	,-39.6954103984498	,5.36520535404774},
-																{-220.550346615117	,150.142110973780	,-39.6803145871376	,4.84591726639935},
-																{1983.04344474672	,-1086.94230997371	,211.953038244965	,5.06522197416514},
-																{96.1185284211289	,-57.9583090999690,	12.8487400728423	-0.0549293400443370}};
+float Poly_Coefficient[12][4]={
+															{-161.259861257070, 109.536849434539, -41.158450389303, -0.317093938410},
+															{2.378801114906, -2.041764288258, -3.284889190676, -0.006700613564},
+															{-169.255081329858, 90.015210428789, -16.206399365452, -1.212411773750},
+															{-87.407564519454, 46.784956583810, -9.591053978779, -1.257240855724},
+															{-815.326088560862, 492.689732072248, -109.029233242912, 10.434322873478},
+															{-18.580455294741, 13.391605893996, -3.764584564372, 0.594544483498},
+															{-94.379503773934, 72.751171405232, -21.372256720865, 3.417208515707},
+															{-5.906969017545, 4.743882223006, -1.479937927643, 0.308086768436},
+															{-442.425497045011, 266.496891626985, -58.446703969453, 5.314260650995},
+															{-462.161539531547, 267.190926527127, -55.513156813776, 4.725333258092},
+															{1758.555751801603, -937.419487883650, 169.683061508561, 9.469338375809},
+															{69.876296668616, -39.577598374806, 7.923421244298, 0.133008226300}};
 vmc_leg_t right;
 
 extern INS_t INS;
@@ -92,7 +93,7 @@ void ChassisR_init(chassis_t *chassis,vmc_leg_t *vmc,PidTypeDef *legr)
 	joint_motor_init(&chassis->joint_motor[0],6,MIT_MODE);//Tx id 6 
 	joint_motor_init(&chassis->joint_motor[1],8,MIT_MODE);//Tx id 8
 	
-	wheel_motor_init(&chassis->wheel_motor[0],1,MIT_MODE);//Tx id 1
+	wheel_motor_init(&chassis->wheel_motor[0],0,MIT_MODE);//Tx id 1
 	
 	VMC_init(vmc);//Set link lengths and initial positions
 	
@@ -146,7 +147,7 @@ void chassisR_feedback_update(chassis_t *chassis,vmc_leg_t *vmc,INS_t *ins)
 	chassis->theta_err=0.0f-(vmc->theta+left.theta);
 	
 	if(ins->Pitch<(3.1415926f/6.0f)&&ins->Pitch>(-3.1415926f/6.0f))
-	{//Determine if self-righting is complete based on pitch angle 
+	{//Determine if self-righting is complete based on pitch angle (±45°)
 		chassis->recover_flag=0;
 	}
 }
@@ -183,7 +184,7 @@ void chassisR_control_loop(chassis_t *chassis,vmc_leg_t *vmcr,INS_t *ins,float *
 					+LQR_K[11]*(chassis->myPithGyroR-0.0f));
 				
 	chassis->wheel_motor[0].wheel_T=chassis->wheel_motor[0].wheel_T-chassis->turn_T;	//Hub motor output torque
-	mySaturate(&chassis->wheel_motor[0].wheel_T,-1.0f,1.0f);	
+	mySaturate(&chassis->wheel_motor[0].wheel_T,-2.0f,2.0f);	
 	
 	vmcr->Tp=vmcr->Tp+chassis->leg_tp;//Hip joint output torque
 
@@ -218,13 +219,13 @@ void chassisR_control_loop(chassis_t *chassis,vmc_leg_t *vmcr,INS_t *ins,float *
 		 vmcr->Tp=0.0f;
 	 }	 
 	 
-	mySaturate(&vmcr->F0,-150.0f,150.0f);//Saturation limit 
+	mySaturate(&vmcr->F0,-100.0f,100.0f);//Saturation limit 
 	
 	VMC_calc_2(vmcr);//Calculate expected joint output torque
 
 	//Rated torque saturation
-  mySaturate(&vmcr->torque_set[1],-4.0f,4.0f);	
-	mySaturate(&vmcr->torque_set[0],-4.0f,4.0f);		
+  mySaturate(&vmcr->torque_set[1],-7.0f,7.0f);	
+	mySaturate(&vmcr->torque_set[0],-7.0f,7.0f);		
 }
 
 void mySaturate(float *in,float min,float max)
@@ -246,8 +247,8 @@ void jump_loop_r(chassis_t *chassis,vmc_leg_t *vmcr,PidTypeDef *leg)
 	{
 		if(chassis->jump_status_r == 0)
 		{
-			vmcr->F0=Mg/arm_cos_f32(vmcr->theta) + PID_Calc(leg,vmcr->L0,0.07f) ;//Feedforward + PD
-			if(vmcr->L0<0.1f)
+			vmcr->F0=Mg/arm_cos_f32(vmcr->theta) + PID_Calc(leg,vmcr->L0,0.08f) ;//Feedforward + PD
+			if(vmcr->L0<0.10f)
 			{
 				chassis->jump_time_r++;
 			}
@@ -261,8 +262,8 @@ void jump_loop_r(chassis_t *chassis,vmc_leg_t *vmcr,PidTypeDef *leg)
 		}
 		else if(chassis->jump_status_r == 1)
 		{
-			vmcr->F0=Mg/arm_cos_f32(vmcr->theta) + PID_Calc(leg,vmcr->L0,0.4f) ;//Feedforward + PD
-			if(vmcr->L0>0.16f)
+			vmcr->F0=Mg/arm_cos_f32(vmcr->theta) + PID_Calc(leg,vmcr->L0,0.21f) ;//Feedforward + PD
+			if(vmcr->L0>0.18f)
 			{
 				chassis->jump_time_r++;
 			}

@@ -37,6 +37,8 @@ ctrlboard-h7_imu\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_spi.h
 ctrlboard-h7_imu\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_spi_ex.h
 ctrlboard-h7_imu\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim.h
 ctrlboard-h7_imu\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h
+ctrlboard-h7_imu\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h
+ctrlboard-h7_imu\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h
 ctrlboard-h7_imu\main.o: ../User/Bsp/bsp_dwt.h
 ctrlboard-h7_imu\main.o: ../Core/Inc/main.h
 ctrlboard-h7_imu\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
@@ -57,6 +59,7 @@ ctrlboard-h7_imu\main.o: ../Core/Inc/dma.h
 ctrlboard-h7_imu\main.o: ../Core/Inc/fdcan.h
 ctrlboard-h7_imu\main.o: ../Core/Inc/spi.h
 ctrlboard-h7_imu\main.o: ../Core/Inc/tim.h
+ctrlboard-h7_imu\main.o: ../Core/Inc/usart.h
 ctrlboard-h7_imu\main.o: ../Core/Inc/gpio.h
 ctrlboard-h7_imu\main.o: ../User/Devices/BMI088/BMI088driver.h
 ctrlboard-h7_imu\main.o: ../User/Algorithm/kalman/kalman_filter.h
@@ -67,3 +70,11 @@ ctrlboard-h7_imu\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 ctrlboard-h7_imu\main.o: ../User/Algorithm/mahony/mahony_filter.h
 ctrlboard-h7_imu\main.o: ../User/Devices/BMI088/BMI088Middleware.h
 ctrlboard-h7_imu\main.o: ../User/Bsp/can_bsp.h
+ctrlboard-h7_imu\main.o: ../User/APP/app_uart.h
+ctrlboard-h7_imu\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
+ctrlboard-h7_imu\main.o: ../User/APP/chassisR_task.h
+ctrlboard-h7_imu\main.o: ../User/Devices/DM_Motor/dm4310_drv.h
+ctrlboard-h7_imu\main.o: ../User/Algorithm/PID/pid.h
+ctrlboard-h7_imu\main.o: ../User/Algorithm/VMC/VMC_calc.h
+ctrlboard-h7_imu\main.o: ../User/APP/INS_task.h
+ctrlboard-h7_imu\main.o: ../User/Algorithm/EKF/QuaternionEKF.h

@@ -1,7 +1,7 @@
 /**
   *********************************************************************
   * @file      ins_task.c/h
-  * @brief     Inertial navigation using Mahony filter to obtain attitude while simultaneously obtaining linear acceleration in the navigation frame
+  * @brief     ����������mahony������ȡ������̬��ͬʱ��ȡ�����ھ�������ϵ�µ��˶����ٶ�
   * @note       
   * @history
   *
@@ -18,18 +18,30 @@
 #include "QuaternionEKF.h"
 #include "bsp_PWM.h"
 #include "mahony_filter.h"
+#include "chassisR_task.h"
+#include <stdio.h>
+#include "app_uart.h"
 
 INS_t INS;
+extern chassis_t chassis_move;
+extern vmc_leg_t left;
+extern vmc_leg_t right;
 
 struct MAHONY_FILTER_t mahony;
 Axis3f Gyro,Accel;
 float gravity[3] = {0, 0, 9.81f};
 
+// Calibration offsets (in radians)
+#define PITCH_OFFSET_DEG (-2.0f)  // Negative to compensate forward tilt
+#define PITCH_OFFSET_RAD (PITCH_OFFSET_DEG * 0.0174533f)  // Convert to radians
+
 uint32_t INS_DWT_Count = 0;
 float ins_dt = 0.0f;
 float ins_time;
 int stop_time;
-
+float Pitch_deg;
+float Roll_deg;
+float Yaw_deg;
 void INS_Init(void)
 { 
 	 mahony_init(&mahony,1.0f,0.0f,0.001f);
@@ -71,40 +83,43 @@ void INS_task(void)
 		INS.q[2]=mahony.q2;
 		INS.q[3]=mahony.q3;
        
-      // Transform acceleration from navigation frame to body frame, remove gravity acceleration to get linear acceleration 
+      // �������ӵ�������ϵnת��������ϵb,�����ݼ��ٶȼ����ݼ����˶����ٶ�
 		float gravity_b[3];
     EarthFrameToBodyFrame(gravity, gravity_b, INS.q);
-    for (uint8_t i = 0; i < 3; i++) // Same as above
+    for (uint8_t i = 0; i < 3; i++) // ͬ����һ����ͨ�˲�
     {
       INS.MotionAccel_b[i] = (INS.Accel[i] - gravity_b[i]) * ins_dt / (INS.AccelLPF + ins_dt) 
 														+ INS.MotionAccel_b[i] * INS.AccelLPF / (INS.AccelLPF + ins_dt); 
 //			INS.MotionAccel_b[i] = (INS.Accel[i] ) * dt / (INS.AccelLPF + dt) 
 //														+ INS.MotionAccel_b[i] * INS.AccelLPF / (INS.AccelLPF + dt);			
 		}
-		BodyFrameToEarthFrame(INS.MotionAccel_b, INS.MotionAccel_n, INS.q); // Transform back to navigation frame
+		BodyFrameToEarthFrame(INS.MotionAccel_b, INS.MotionAccel_n, INS.q); // ת���ص���ϵn
 		
-		// Filtering small values
+		//��������
 		if(fabsf(INS.MotionAccel_n[0])<0.02f)
 		{
-		  INS.MotionAccel_n[0]=0.0f;	//x axis
+		  INS.MotionAccel_n[0]=0.0f;	//x��
 		}
 		if(fabsf(INS.MotionAccel_n[1])<0.02f)
 		{
-		  INS.MotionAccel_n[1]=0.0f;	//y axis
+		  INS.MotionAccel_n[1]=0.0f;	//y��
 		}
 		if(fabsf(INS.MotionAccel_n[2])<0.04f)
 		{
-		  INS.MotionAccel_n[2]=0.0f;//z axis
+		  INS.MotionAccel_n[2]=0.0f;//z��
 		}
-   		
+ 
 		if(ins_time>3000.0f)
 		{
-			INS.ins_flag=1;//Inertial navigation is stable, velocity and position can be initialized
-			// Obtain attitude angles
-      INS.Pitch=mahony.roll;
-		  INS.Roll=mahony.pitch;
-		  INS.Yaw=mahony.yaw;
-		
+			INS.ins_flag=1;//��Ԫ���������������ٶ�Ҳ�������������Կ�ʼ��������
+			// ��ȡ��������
+      INS.Pitch=mahony.roll ;//+ PITCH_OFFSET_RAD;  // Apply pitch calibration offset
+		INS.Roll=mahony.pitch;
+		INS.Yaw=mahony.yaw;
+		Pitch_deg= rad_to_deg(INS.Pitch);
+		Roll_deg= rad_to_deg(INS.Roll);
+		Yaw_deg= rad_to_deg(INS.Yaw);
+			
 		//INS.YawTotalAngle=INS.YawTotalAngle+INS.Gyro[2]*0.001f;
 			
 			if (INS.Yaw - INS.YawAngleLast > 3.1415926f)
@@ -122,12 +137,31 @@ void INS_task(void)
 		{
 		 ins_time++;
 		}
-		
+				/* ===== DEBUG PRINT ANGLE & VELOCITY ===== */
+
+static uint32_t last_print = 0;
+
+/* debug angle and velocity */
+		if (HAL_GetTick() - last_print >= 20)   // ~6.67 Hz
+		{
+			char tx[200];
+
+			snprintf(tx, sizeof(tx),
+					 "P=%.2f R=%.2f Y=%.2f V=%.3f TL=%.2f TR=%.2f FL=%.1f FR=%.1f\r\n",
+					 Pitch_deg,
+					 Roll_deg,
+					 Yaw_deg,
+					 chassis_move.v_filter,
+					 chassis_move.wheel_motor[1].para.tor,
+					 chassis_move.wheel_motor[0].para.tor,
+					 left.F0,
+					 right.F0);
+			uart_send_str(tx);
+			last_print = HAL_GetTick();
+		}
     osDelay(1);
 	}
-} 
-
-
+}
 /**
  * @brief          Transform 3dvector from BodyFrame to EarthFrame
  * @param[1]       vector in BodyFrame
@@ -170,6 +204,15 @@ void EarthFrameToBodyFrame(const float *vecEF, float *vecBF, float *q)
                        (0.5f - q[1] * q[1] - q[2] * q[2]) * vecEF[2]);
 }
 
+/**
+ * @brief          Convert radians to degrees
+ * @param[1]       angle in radians
+ * @retval         angle in degrees
+ */
+float rad_to_deg(float rad)
+{
+    return rad * 57.2957795f;  // 180/π
+}
 
 
 

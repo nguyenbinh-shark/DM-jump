@@ -27,8 +27,8 @@
 vmc_leg_t left;
 
 float LQR_K_L[12]={ 
-   -6.30722928759530	,-0.696842887297413	,-2.14750226828115	,-1.96028779204492	,3.16000121531755	,0.352046989571068,
-    2.88563699845567	,0.321831107772386	,1.39325878380067	,1.18589341838622	,19.6627000823183	,0.927093573503157};
+   -5.11661395587923	,-0.696218875811963,	-2.21758581294137,	-1.99627529082690,	1.58419592732791	,0.204733182421384,
+		1.05342099102585,	0.125737489379163,	0.641533951717394,	0.517183568761030,	20.0319440884663,	0.635996438625759};
 
 extern float Poly_Coefficient[12][4];
 
@@ -140,7 +140,7 @@ void chassisL_control_loop(chassis_t *chassis,vmc_leg_t *vmcl,INS_t *ins,float *
 					+LQR_K[11]*(chassis->myPithGyroL-0.0f));
 	 		
 	chassis->wheel_motor[1].wheel_T= chassis->wheel_motor[1].wheel_T-chassis->turn_T;	// Hub motor output torque
-	mySaturate(&chassis->wheel_motor[1].wheel_T,-1.0f,1.0f);	
+	mySaturate(&chassis->wheel_motor[1].wheel_T,-2.0f,2.0f);	
 	
 	vmcl->Tp=vmcl->Tp+chassis->leg_tp;// Hip joint output torque
 
@@ -172,13 +172,13 @@ void chassisL_control_loop(chassis_t *chassis,vmc_leg_t *vmcl,INS_t *ins,float *
 		 vmcl->Tp=0.0f;
 	 }
 	
-	mySaturate(&vmcl->F0,-150.0f,150.0f);// Clamp 
+	mySaturate(&vmcl->F0,-100.0f,100.0f);// Clamp 
 	
 	VMC_calc_2(vmcl);// Compute desired joint output torque
 	
   // Rated torque
-  mySaturate(&vmcl->torque_set[1],-4.0f,4.0f);	
-	mySaturate(&vmcl->torque_set[0],-4.0f,4.0f);	
+  mySaturate(&vmcl->torque_set[1],-7.0f,7.0f);	
+	mySaturate(&vmcl->torque_set[0],-7.0f,7.0f);	
 	
 }
 void jump_loop_l(chassis_t *chassis,vmc_leg_t *vmcl,PidTypeDef *leg)
@@ -187,16 +187,16 @@ void jump_loop_l(chassis_t *chassis,vmc_leg_t *vmcl,PidTypeDef *leg)
 	{
 		if(chassis->jump_status_l == 0)
 		{
-			vmcl->F0= Mg/arm_cos_f32(vmcl->theta) + PID_Calc(leg,vmcl->L0,0.07f) ;// Feedforward + PD
-			if(vmcl->L0<0.1f)
+			vmcl->F0= Mg/arm_cos_f32(vmcl->theta) + PID_Calc(leg,vmcl->L0,0.08f) ;// Feedforward + PD
+			if(vmcl->L0<0.10f)
 			{
 				chassis->jump_time_l++;
 			}
 		}
 		else if(chassis->jump_status_l == 1)
 		{
-			vmcl->F0= Mg/arm_cos_f32(vmcl->theta) + PID_Calc(leg,vmcl->L0,0.4f) ;// Feedforward + PD
-			if(vmcl->L0>0.16f)
+			vmcl->F0= Mg/arm_cos_f32(vmcl->theta) + PID_Calc(leg,vmcl->L0,0.21f) ;// Feedforward + PD
+			if(vmcl->L0>0.18f)
 			{
 				chassis->jump_time_l++;
 			}

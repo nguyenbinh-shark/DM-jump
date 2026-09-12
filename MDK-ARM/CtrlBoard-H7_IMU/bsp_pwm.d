@@ -39,5 +39,7 @@ ctrlboard-h7_imu\bsp_pwm.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_sp
 ctrlboard-h7_imu\bsp_pwm.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_spi_ex.h
 ctrlboard-h7_imu\bsp_pwm.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim.h
 ctrlboard-h7_imu\bsp_pwm.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h
+ctrlboard-h7_imu\bsp_pwm.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h
+ctrlboard-h7_imu\bsp_pwm.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h
 ctrlboard-h7_imu\bsp_pwm.o: ../User/Bsp/bsp_dwt.h
 ctrlboard-h7_imu\bsp_pwm.o: ../Core/Inc/main.h

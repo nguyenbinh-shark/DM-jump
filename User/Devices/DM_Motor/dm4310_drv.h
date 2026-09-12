@@ -58,7 +58,7 @@ typedef struct
 typedef struct
 {
 	uint16_t mode;
-	float wheel_T;//ÂÖì±µç»úµÄÊä³öÅ¤¾Ø£¬µ¥Î»ÎªN
+	float wheel_T;//ï¿½ï¿½ì±µï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å¤ï¿½Ø£ï¿½ï¿½ï¿½Î»ÎªN
 	
 	motor_fbpara_t para;	
 }Wheel_Motor_t ;
@@ -70,19 +70,19 @@ extern void dm6215_fbdata(Wheel_Motor_t *motor, uint8_t *rx_data,uint32_t data_l
 extern void enable_motor_mode(hcan_t* hcan, uint16_t motor_id, uint16_t mode_id);
 extern void disable_motor_mode(hcan_t* hcan, uint16_t motor_id, uint16_t mode_id);
 
-//¹Ø½Úµç»ú
+//ï¿½Ø½Úµï¿½ï¿½
 extern void mit_ctrl(hcan_t* hcan, uint16_t motor_id, float pos, float vel,float kp, float kd, float torq);
 extern void pos_speed_ctrl(hcan_t* hcan,uint16_t motor_id, float pos, float vel);
 extern void speed_ctrl(hcan_t* hcan,uint16_t motor_id, float _vel);
 
-//ÂÖì±µç»úMITÄ£Ê½·¢ËÍÃüÁî
+//ï¿½ï¿½ì±µï¿½ï¿½MITÄ£Ê½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 extern void mit_ctrl2(hcan_t* hcan, uint16_t motor_id, float pos, float vel,float kp, float kd, float torq);
 
 extern void joint_motor_init(Joint_Motor_t *motor,uint16_t id,uint16_t mode);
 extern void wheel_motor_init(Wheel_Motor_t *motor,uint16_t id,uint16_t mode);
 	
-extern float Hex_To_Float(uint32_t *Byte,int num);//Ê®Áù½øÖÆµ½¸¡µãÊý
-extern uint32_t FloatTohex(float HEX);//¸¡µãÊýµ½Ê®Áù½øÖÆ×ª»»
+extern float Hex_To_Float(uint32_t *Byte,int num);//Ê®ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+extern uint32_t FloatTohex(float HEX);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½
 
 extern float uint_to_float(int x_int, float x_min, float x_max, int bits);
 extern int float_to_uint(float x_float, float x_min, float x_max, int bits);

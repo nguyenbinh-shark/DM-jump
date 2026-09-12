@@ -34,6 +34,8 @@
 #include "bsp_dwt.h"
 #include "BMI088Middleware.h"
 #include "can_bsp.h"
+#include "app_uart.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -67,6 +69,7 @@ void MX_FREERTOS_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+extern uint8_t uart1_rx_byte;
 
 /* USER CODE END 0 */
 
@@ -108,8 +111,10 @@ int main(void)
   MX_TIM3_Init();
   MX_FDCAN3_Init();
   MX_USART1_UART_Init();
+  MX_TIM12_Init();
   /* USER CODE BEGIN 2 */
-  HAL_UART_Receive_IT(&huart1, &uart1_rx_byte, 1);
+	//HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
+	//TIM12->CCR2 = 50;
 	DWT_Init(480);
     /* BMI088 initialization */
     //Previously, the accelerometer and gyroscope of the BMI088 have been calibrated, so there is no need to calibrate the relationship between them. Other hardware devices need to be calibrated
@@ -123,14 +128,15 @@ int main(void)
 
   FDCAN1_Config();//can initialization
 	FDCAN2_Config();
+
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
   MX_FREERTOS_Init();
-
+	//uart_send_str("INS READY\r\n");
+	//uart_send_str("ERROR SENSOR\r\n");
   /* Start scheduler */
   osKernelStart();
-
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -139,7 +145,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
- 
+
   }
   /* USER CODE END 3 */
 }

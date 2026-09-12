@@ -38,6 +38,8 @@ ctrlboard-h7_imu\chassisr_task.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_
 ctrlboard-h7_imu\chassisr_task.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_spi_ex.h
 ctrlboard-h7_imu\chassisr_task.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim.h
 ctrlboard-h7_imu\chassisr_task.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h
+ctrlboard-h7_imu\chassisr_task.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h
+ctrlboard-h7_imu\chassisr_task.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h
 ctrlboard-h7_imu\chassisr_task.o: ../User/Bsp/bsp_dwt.h
 ctrlboard-h7_imu\chassisr_task.o: ../Core/Inc/main.h
 ctrlboard-h7_imu\chassisr_task.o: ../User/Devices/DM_Motor/dm4310_drv.h

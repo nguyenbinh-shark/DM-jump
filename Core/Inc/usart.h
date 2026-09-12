@@ -35,6 +35,7 @@ extern "C" {
 extern UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN Private defines */
+extern uint8_t uart1_rx_byte;
 
 /* USER CODE END Private defines */
 

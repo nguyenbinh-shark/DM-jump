@@ -38,6 +38,8 @@ ctrlboard-h7_imu\ps2_task.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_s
 ctrlboard-h7_imu\ps2_task.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_spi_ex.h
 ctrlboard-h7_imu\ps2_task.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim.h
 ctrlboard-h7_imu\ps2_task.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h
+ctrlboard-h7_imu\ps2_task.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h
+ctrlboard-h7_imu\ps2_task.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h
 ctrlboard-h7_imu\ps2_task.o: ../User/Bsp/bsp_dwt.h
 ctrlboard-h7_imu\ps2_task.o: ../Core/Inc/main.h
 ctrlboard-h7_imu\ps2_task.o: ..\User\APP\chassisR_task.h
@@ -70,3 +72,5 @@ ctrlboard-h7_imu\ps2_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/
 ctrlboard-h7_imu\ps2_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 ctrlboard-h7_imu\ps2_task.o: ../User/Lib/user_lib.h
 ctrlboard-h7_imu\ps2_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
+ctrlboard-h7_imu\ps2_task.o: ../Core/Inc/tim.h
+ctrlboard-h7_imu\ps2_task.o: ../User/Bsp/bsp_PWM.h

@@ -38,6 +38,8 @@ ctrlboard-h7_imu\vmc_calc.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_s
 ctrlboard-h7_imu\vmc_calc.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_spi_ex.h
 ctrlboard-h7_imu\vmc_calc.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim.h
 ctrlboard-h7_imu\vmc_calc.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h
+ctrlboard-h7_imu\vmc_calc.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h
+ctrlboard-h7_imu\vmc_calc.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h
 ctrlboard-h7_imu\vmc_calc.o: ../User/Bsp/bsp_dwt.h
 ctrlboard-h7_imu\vmc_calc.o: ../Core/Inc/main.h
 ctrlboard-h7_imu\vmc_calc.o: ../User/APP/INS_task.h

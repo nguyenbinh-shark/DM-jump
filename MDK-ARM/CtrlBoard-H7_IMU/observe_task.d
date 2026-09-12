@@ -40,6 +40,8 @@ ctrlboard-h7_imu\observe_task.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_h
 ctrlboard-h7_imu\observe_task.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_spi_ex.h
 ctrlboard-h7_imu\observe_task.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim.h
 ctrlboard-h7_imu\observe_task.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h
+ctrlboard-h7_imu\observe_task.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h
+ctrlboard-h7_imu\observe_task.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h
 ctrlboard-h7_imu\observe_task.o: ../User/Bsp/bsp_dwt.h
 ctrlboard-h7_imu\observe_task.o: ../Core/Inc/main.h
 ctrlboard-h7_imu\observe_task.o: ../User/Algorithm/EKF/QuaternionEKF.h
@@ -69,3 +71,5 @@ ctrlboard-h7_imu\observe_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/incl
 ctrlboard-h7_imu\observe_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 ctrlboard-h7_imu\observe_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 ctrlboard-h7_imu\observe_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
+ctrlboard-h7_imu\observe_task.o: ..\User\APP\app_uart.h
+ctrlboard-h7_imu\observe_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h

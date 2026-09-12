@@ -31,6 +31,7 @@
 #include "observe_task.h"
 #include "ps2_task.h"
 #include "app_uart.h"
+#include "uart_control_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,9 +59,8 @@ osThreadId CHASSISR_TASKHandle;
 osThreadId CHASSISL_TASKHandle;
 osThreadId OBSERVE_TASKHandle;
 osThreadId PS2_TASKHandle;
+osThreadId UART_CONTROL_TASKHandle;
 
-QueueHandle_t uart1_rx_queue;
-SemaphoreHandle_t uart_data_mutex;
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 
@@ -72,6 +72,7 @@ void ChassisR_Task(void const * argument);
 void ChassisL_Task(void const * argument);
 void OBSERVE_Task(void const * argument);
 void PS2_Task(void const * argument);
+void UART_Control_Task_Wrapper(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -88,6 +89,7 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
   uart_data_mutex = xSemaphoreCreateMutex();
+	uart_tx_mutex = xSemaphoreCreateMutex();
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -130,8 +132,16 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  osThreadDef(UART_TASK, UartTask, osPriorityAboveNormal, 0, 256);
+  osThreadDef(UART_TASK,
+            (os_pthread)UartTask,
+            osPriorityAboveNormal,
+            0,
+            256);
   osThreadCreate(osThread(UART_TASK), NULL);
+
+  /* definition and creation of UART_CONTROL_TASK */
+  osThreadDef(UART_CONTROL_TASK, UART_Control_Task_Wrapper, osPriorityNormal, 0, 256);
+  UART_CONTROL_TASKHandle = osThreadCreate(osThread(UART_CONTROL_TASK), NULL);
   /* USER CODE END RTOS_THREADS */
 
 }
@@ -247,5 +257,23 @@ void PS2_Task(void const * argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
+
+/* USER CODE BEGIN Header_UART_Control_Task */
+/**
+* @brief Function implementing the UART_CONTROL_TASK thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_UART_Control_Task */
+void UART_Control_Task_Wrapper(void const * argument)
+{
+  /* USER CODE BEGIN UART_Control_Task */
+  /* Infinite loop */
+  for(;;)
+  {
+    UART_Control_Task(argument);
+  }
+  /* USER CODE END UART_Control_Task */
+}
 
 /* USER CODE END Application */

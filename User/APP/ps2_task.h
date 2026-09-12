@@ -74,6 +74,7 @@ void PS2_SetInit(void);                     // Run full init sequence
 
 extern void pstwo_task(void);
 void jump_key (chassis_t *chassis,ps2data_t *data);
+void PS2_mode_switch(ps2data_t *data, chassis_t *chassis);
 
 
 

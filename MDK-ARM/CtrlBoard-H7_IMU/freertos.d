@@ -46,6 +46,8 @@ ctrlboard-h7_imu\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_s
 ctrlboard-h7_imu\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_spi_ex.h
 ctrlboard-h7_imu\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim.h
 ctrlboard-h7_imu\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h
+ctrlboard-h7_imu\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h
+ctrlboard-h7_imu\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h
 ctrlboard-h7_imu\freertos.o: ../User/Bsp/bsp_dwt.h
 ctrlboard-h7_imu\freertos.o: ../Core/Inc/main.h
 ctrlboard-h7_imu\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
@@ -70,3 +72,7 @@ ctrlboard-h7_imu\freertos.o: ../User/Algorithm/VMC/VMC_calc.h
 ctrlboard-h7_imu\freertos.o: ../User/APP/chassisL_task.h
 ctrlboard-h7_imu\freertos.o: ../User/APP/observe_task.h
 ctrlboard-h7_imu\freertos.o: ../User/APP/ps2_task.h
+ctrlboard-h7_imu\freertos.o: ../User/APP/app_uart.h
+ctrlboard-h7_imu\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
+ctrlboard-h7_imu\freertos.o: ../User/APP/uart_control_task.h
+ctrlboard-h7_imu\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h

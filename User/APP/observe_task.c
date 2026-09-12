@@ -17,6 +17,7 @@
 #include "observe_task.h"
 #include "kalman_filter.h"
 #include "cmsis_os.h"
+#include "app_uart.h"
 
 KalmanFilter_t vaEstimateKF;	   // Velocity and position estimation Kalman filter structure
 
@@ -44,7 +45,10 @@ extern vmc_leg_t right;
 extern vmc_leg_t left;	
 
 float vel_acc[2]; 
-uint32_t OBSERVE_TIME=3;// Sampling time 3ms															 
+uint32_t OBSERVE_TIME=3;// Sampling time 3ms	
+static uint32_t feedback_counter = 0;  // Counter for feedback rate limiting
+#define FEEDBACK_DIVIDER 10  // Send feedback every 10 cycles = 30ms = ~33Hz
+														 
 void 	Observe_task(void)
 {
 	while(INS.ins_flag==0)
@@ -71,6 +75,14 @@ void 	Observe_task(void)
 		// Original method to calculate v_filter and x_filter should be 0
 		chassis_move.v_filter=vel_acc[0];// Obtained linear velocity in navigation frame
 		chassis_move.x_filter=chassis_move.x_filter+chassis_move.v_filter*((float)OBSERVE_TIME/1000.0f);
+		
+		// Send feedback to Python at ~33Hz (every 30ms)
+		feedback_counter++;
+		if (feedback_counter >= FEEDBACK_DIVIDER)
+		{
+			//uart_send_feedback(&chassis_move, &INS);
+			feedback_counter = 0;
+		}
 		
 	// Calculate linear velocity based on wheel angular velocity, used for comparison with above velocity
 	//chassis_move.v_filter=(chassis_move.wheel_motor[0].para.vel-chassis_move.wheel_motor[1].para.vel)*(-0.0603f)/2.0f;//0.0603 is wheel radius, used to calculate linear velocity from angular velocity, wheel radius is obtained by measurement, used for comparison with above velocity

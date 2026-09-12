@@ -153,7 +153,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
     if (huart->Instance == USART1)
-    {
+    {	
+
         xQueueSendFromISR(uart1_rx_queue,
                           &uart1_rx_byte,
                           &xHigherPriorityTaskWoken);
