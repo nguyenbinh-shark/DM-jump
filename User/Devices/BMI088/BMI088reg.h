@@ -7,6 +7,7 @@
  * @note    Wheeled-Bipedal Jumping Robot (DM-jump) Firmware
  *          Target MCU: STM32H723VGT6 | FreeRTOS | Keil MDK-ARM
  * @link    https://github.com/nguyenbinh-shark/DM-jump
+ * @website https://nguyenbinh-shark.github.io/
  *
  * Copyright (c) 2024-2026 Trần Nguyên Bình. All rights reserved.
  * Distributed under the MIT License.
