@@ -1,19 +1,26 @@
 /**
-  ******************************************************************************
-  * @file	 controller.h
-  * @author  Wang Hongxi
-  * @author  Zhang Hongyu (fuzzy pid)
-  * @version V1.1.3
-  * @date    2021/7/3
-  * @brief   
-  ******************************************************************************
-  * @attention 
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file    controller.h
+ * @brief   Bộ thư viện điều khiển nâng cao: Fuzzy PID, Feedforward, LDOB, TD (Bilingual EN/VI)
+ *          Advanced Control Library: Fuzzy PID, Feedforward, LDOB, Tracking Differentiator
+ * @author  Trần Nguyên Bình (trannguyenbinh.shark@gmail.com)
+ * @website https://nguyenbinh-shark.github.io/
+ * @github  https://github.com/nguyenbinh-shark/DM-jump
+ * @date    2024 - 2026
+ * @note    Wheeled-Bipedal Jumping Robot (DM-jump) Firmware
+ *          Target MCU: STM32H723VGT6 | FreeRTOS | Keil MDK-ARM
+ *
+ * Copyright (c) 2024-2026 Trần Nguyên Bình. All rights reserved.
+ * Distributed under the MIT License.
+ ******************************************************************************
+ */
+
 #ifndef _CONTROLLER_H
 #define _CONTROLLER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "main.h"
 #include "stdint.h"
@@ -36,15 +43,20 @@
 #endif
 #endif
 
-/******************************** FUZZY PID **********************************/
-#define NB -3
-#define NM -2
-#define NS -1
-#define ZE 0
-#define PS 1
-#define PM 2
-#define PB 3
+/* ==============================================================================
+ * 1. FUZZY PID - BỘ ĐIỀU KHIỂN PID MỜ THÍCH NGHI / FUZZY ADAPTIVE PID
+ * ============================================================================== */
+#define NB -3   /*!< Negative Big (Âm lớn) */
+#define NM -2   /*!< Negative Medium (Âm vừa) */
+#define NS -1   /*!< Negative Small (Âm nhỏ) */
+#define ZE  0   /*!< Zero (Không) */
+#define PS  1   /*!< Positive Small (Dương nhỏ) */
+#define PM  2   /*!< Positive Medium (Dương vừa) */
+#define PB  3   /*!< Positive Big (Dương lớn) */
 
+/**
+ * @brief Cấu trúc luật mờ hiệu chỉnh tham số Kp, Ki, Kd / Fuzzy rule structure
+ */
 typedef __packed struct
 {
     float KpFuzzy;
@@ -75,24 +87,26 @@ void Fuzzy_Rule_Init(FuzzyRule_t *fuzzyRule, float (*fuzzyRuleKp)[7], float (*fu
                      float eStep, float ecStep);
 void Fuzzy_Rule_Implementation(FuzzyRule_t *fuzzyRule, float measure, float ref);
 
-/******************************* PID CONTROL *********************************/
+/* ==============================================================================
+ * 2. PID CONTROL - BỘ ĐIỀU KHIỂN PID ĐA TÍNH NĂNG / ADVANCED PID CONTROLLER
+ * ============================================================================== */
 typedef enum pid_Improvement_e
 {
-    NONE = 0X00,                        //0000 0000
-    Integral_Limit = 0x01,              //0000 0001
-    Derivative_On_Measurement = 0x02,   //0000 0010
-    Trapezoid_Intergral = 0x04,         //0000 0100
-    Proportional_On_Measurement = 0x08, //0000 1000
-    OutputFilter = 0x10,                //0001 0000
-    ChangingIntegrationRate = 0x20,     //0010 0000
-    DerivativeFilter = 0x40,            //0100 0000
-    ErrorHandle = 0x80,                 //1000 0000
+    NONE                        = 0x00, /*!< PID tiêu chuẩn / Standard PID */
+    Integral_Limit              = 0x01, /*!< Giới hạn tích phân chống bão hòa / Integral anti-windup */
+    Derivative_On_Measurement   = 0x02, /*!< Đạo hàm theo biến đo tránh giật / Derivative on measurement */
+    Trapezoid_Intergral         = 0x04, /*!< Tích phân hình thang / Trapezoidal integration */
+    Proportional_On_Measurement = 0x08, /*!< Tỉ lệ theo biến đo / Proportional on measurement */
+    OutputFilter                = 0x10, /*!< Lọc thông thấp đầu ra / Output lowpass filter */
+    ChangingIntegrationRate     = 0x20, /*!< Tích phân biến thiên theo sai số / Variable integration rate */
+    DerivativeFilter            = 0x40, /*!< Lọc thông thấp đạo hàm / Derivative lowpass filter */
+    ErrorHandle                 = 0x80  /*!< Giám sát và xử lý sự cố kẹt động cơ / Motor stall error handling */
 } PID_Improvement_e;
 
 typedef enum errorType_e
 {
     PID_ERROR_NONE = 0x00U,
-    Motor_Blocked = 0x01U
+    Motor_Blocked  = 0x01U
 } ErrorType_e;
 
 typedef __packed struct
@@ -101,36 +115,39 @@ typedef __packed struct
     ErrorType_e ERRORType;
 } PID_ErrorHandler_t;
 
+/**
+ * @brief Cấu trúc đối tượng PID mở rộng / Extended PID controller structure
+ */
 typedef __packed struct pid_t
 {
-    float Ref;
-    float Kp;
-    float Ki;
-    float Kd;
+    float Ref;                  /*!< Giá trị đặt / Target reference */
+    float Kp;                   /*!< Hệ số tỉ lệ / Proportional gain */
+    float Ki;                   /*!< Hệ số tích phân / Integral gain */
+    float Kd;                   /*!< Hệ số vi phân / Derivative gain */
 
-    float Measure;
+    float Measure;              /*!< Giá trị đo / Measurement */
     float Last_Measure;
-    float Err;
+    float Err;                  /*!< Sai số e / Error */
     float Last_Err;
     float Last_ITerm;
 
-    float Pout;
-    float Iout;
-    float Dout;
+    float Pout;                 /*!< Ngõ ra tỉ lệ P / Proportional output */
+    float Iout;                 /*!< Ngõ ra tích phân I / Integral output */
+    float Dout;                 /*!< Ngõ ra vi phân D / Derivative output */
     float ITerm;
 
-    float Output;
+    float Output;               /*!< Tín hiệu điều khiển tổng hợp / Total control output */
     float Last_Output;
     float Last_Dout;
 
-    float MaxOut;
-    float IntegralLimit;
-    float DeadBand;
+    float MaxOut;               /*!< Giới hạn ngõ ra lớn nhất / Maximum output saturation */
+    float IntegralLimit;        /*!< Giới hạn tích phân / Integral limit */
+    float DeadBand;             /*!< Vùng chết / Deadband */
     float ControlPeriod;
-    float CoefA;         //For Changing Integral
-    float CoefB;         //ITerm = Err*((A-abs(err)+B)/A)  when B<|err|<A+B
-    float Output_LPF_RC; // RC = 1/omegac
-    float Derivative_LPF_RC;
+    float CoefA;                /*!< Hệ số tích phân biến thiên A */
+    float CoefB;                /*!< Hệ số tích phân biến thiên B */
+    float Output_LPF_RC;        /*!< Hằng số thời gian lọc RC đầu ra / Output LPF RC */
+    float Derivative_LPF_RC;    /*!< Hằng số thời gian lọc RC đạo hàm / Derivative LPF RC */
 
     uint16_t OLS_Order;
     Ordinary_Least_Squares_t OLS;
@@ -153,26 +170,24 @@ void PID_Init(
     float max_out,
     float intergral_limit,
     float deadband,
-
     float kp,
     float ki,
     float kd,
-
     float A,
     float B,
-
     float output_lpf_rc,
     float derivative_lpf_rc,
-
     uint16_t ols_order,
-
     uint8_t improve);
+
 float PID_Calculate(PID_t *pid, float measure, float ref);
 
-/*************************** FEEDFORWARD CONTROL *****************************/
+/* ==============================================================================
+ * 3. FEEDFORWARD CONTROL - BỘ ĐIỀU KHIỂN BÙ TIẾN / FEEDFORWARD CONTROLLER
+ * ============================================================================== */
 typedef __packed struct
 {
-    float c[3]; // G(s) = 1/(c2s^2 + c1s + c0)
+    float c[3]; /*!< Hệ số hàm truyền: G(s) = 1/(c2*s^2 + c1*s + c0) */
 
     float Ref;
     float Last_Ref;
@@ -182,7 +197,7 @@ typedef __packed struct
     uint32_t DWT_CNT;
     float dt;
 
-    float LPF_RC; // RC = 1/omegac
+    float LPF_RC;
 
     float Ref_dot;
     float Ref_ddot;
@@ -195,7 +210,6 @@ typedef __packed struct
 
     float Output;
     float MaxOut;
-
 } Feedforward_t;
 
 void Feedforward_Init(
@@ -208,22 +222,24 @@ void Feedforward_Init(
 
 float Feedforward_Calculate(Feedforward_t *ffc, float ref);
 
-/************************* LINEAR DISTURBANCE OBSERVER *************************/
+/* ==============================================================================
+ * 4. LINEAR DISTURBANCE OBSERVER - BỘ QUAN SÁT NHIỄU TUYẾN TÍNH (LDOB)
+ * ============================================================================== */
 typedef __packed struct
 {
-    float c[3]; // G(s) = 1/(c2s^2 + c1s + c0)
+    float c[3]; /*!< Mô hình danh định đối tượng / Nominal plant inverse coefficients */
 
     float Measure;
     float Last_Measure;
 
-    float u; // system input
+    float u;    /*!< Tín hiệu điều khiển ngõ vào hệ thống / Plant input */
 
     float DeadBand;
 
     uint32_t DWT_CNT;
     float dt;
 
-    float LPF_RC; // RC = 1/omegac
+    float LPF_RC;
 
     float Measure_dot;
     float Measure_ddot;
@@ -234,8 +250,8 @@ typedef __packed struct
     uint16_t Measure_ddot_OLS_Order;
     Ordinary_Least_Squares_t Measure_ddot_OLS;
 
-    float Disturbance;
-    float Output;
+    float Disturbance;      /*!< Ước lượng nhiễu ngoại lực tác động / Estimated disturbance */
+    float Output;           /*!< Tín hiệu bù nhiễu ngõ ra / Compensation output */
     float Last_Disturbance;
     float Max_Disturbance;
 } LDOB_t;
@@ -251,17 +267,19 @@ void LDOB_Init(
 
 float LDOB_Calculate(LDOB_t *ldob, float measure, float u);
 
-/*************************** Tracking Differentiator ***************************/
+/* ==============================================================================
+ * 5. TRACKING DIFFERENTIATOR - BỘ ĐẠO HÀM BÁM MỀM HÀN KINH THANH (TD)
+ * ============================================================================== */
 typedef __packed struct
 {
     float Input;
 
-    float h0;
-    float r;
+    float h0;       /*!< Bước lọc vi phân / Filter step parameter */
+    float r;        /*!< Tham số tốc độ bám tín hiệu / Tracking speed factor */
 
-    float x;
-    float dx;
-    float ddx;
+    float x;        /*!< Tín hiệu bám làm mượt / Filtered signal */
+    float dx;       /*!< Đạo hàm bậc 1 / First-order derivative */
+    float ddx;      /*!< Đạo hàm bậc 2 / Second-order derivative */
 
     float last_dx;
     float last_ddx;
@@ -273,4 +291,8 @@ typedef __packed struct
 void TD_Init(TD_t *td, float r, float h0);
 float TD_Calculate(TD_t *td, float input);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* _CONTROLLER_H */

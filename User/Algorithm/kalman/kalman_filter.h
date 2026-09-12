@@ -1,13 +1,17 @@
 /**
  ******************************************************************************
- * @file    kalman filter.h
- * @author  Wang Hongxi
- * @version V1.2.2
- * @date    2022/1/8
- * @brief
- ******************************************************************************
- * @attention
+ * @file    kalman_filter.h
+ * @brief   Bộ lọc Kalman đa chiều tổng quát (Matrix Kalman Filter)
+ *          General Multi-Dimensional Matrix Kalman Filter Header (Bilingual EN/VI)
+ * @author  Trần Nguyên Bình (trannguyenbinh.shark@gmail.com)
+ * @website https://nguyenbinh-shark.github.io/
+ * @github  https://github.com/nguyenbinh-shark/DM-jump
+ * @date    2024 - 2026
+ * @note    Wheeled-Bipedal Jumping Robot (DM-jump) Firmware
+ *          Target MCU: STM32H723VGT6 | FreeRTOS | Keil MDK-ARM
  *
+ * Copyright (c) 2024-2026 Trần Nguyên Bình. All rights reserved.
+ * Distributed under the MIT License.
  ******************************************************************************
  */
 #ifndef __KALMAN_FILTER_H

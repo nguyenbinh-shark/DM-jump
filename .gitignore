@@ -1,0 +1,68 @@
+# ==============================================================================
+# Git Ignore Rules for DM-jump (STM32H7 + Keil MDK + FreeRTOS)
+# Author: Trần Nguyên Bình (trannguyenbinh.shark@gmail.com)
+# ==============================================================================
+
+# --- Keil MDK-ARM Build Outputs & Intermediates ---
+*.o
+*.d
+*.crf
+*.axf
+*.htm
+*.lnp
+*.sct
+*.dep
+*.map
+*.lst
+*.build_log.htm
+*.browse
+*.iex
+*.pyf
+*.fed
+*.bin
+*.hex
+
+# Keep precompiled objects if any explicitly placed (none by default)
+# Keil MDK User Specific Files
+*.uvguix.*
+*.uvoptx.bak
+*.uvprojx.bak
+*.uvgui.*
+*.uvgui_*.bak
+
+# J-Link & Debugger Logs
+JLinkLog.txt
+JLinkSettings.ini
+*.dbgconf.bak
+
+# STM32CubeMX Backup & Temporary Files
+*.bak
+*.orig
+*~
+*.swp
+*.tmp
+*.log
+
+# Windows OS Files
+[Tt]humbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# macOS Files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor & IDE Directories
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Build artifacts folder inside MDK-ARM
+MDK-ARM/CtrlBoard-H7_IMU/*
+!MDK-ARM/CtrlBoard-H7_IMU/.gitkeep

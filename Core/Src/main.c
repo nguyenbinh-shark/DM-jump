@@ -2,16 +2,20 @@
 /**
   ******************************************************************************
   * @file           : main.c
-  * @brief          : Main program body
+  * @brief          : Main program body for DM-jump Wheeled-Bipedal Robot
+  * @author         : Trần Nguyên Bình
+  * @email          : trannguyenbinh.shark@gmail.com
+  * @website        : https://nguyenbinh-shark.github.io/
+  * @version        : 1.0.0
+  * @date           : 2024-2026
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2024 STMicroelectronics.
+  * Copyright (c) 2024-2026 Trần Nguyên Bình & STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
   * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
   */

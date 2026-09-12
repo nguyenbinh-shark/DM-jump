@@ -1,10 +1,17 @@
 /**
  ******************************************************************************
- * @file    kalman filter.c
- * @author  Wang Hongxi
- * @version V1.2.2
- * @date    2022/1/8
- * @brief   C implementation of kalman filter
+ * @file    kalman_filter.c
+ * @brief   Hiện thực thuật toán lọc Kalman ma trận đa chiều thích nghi
+ *          Adaptive Multi-Dimensional Matrix Kalman Filter Implementation (Bilingual EN/VI)
+ * @author  Trần Nguyên Bình (trannguyenbinh.shark@gmail.com)
+ * @website https://nguyenbinh-shark.github.io/
+ * @github  https://github.com/nguyenbinh-shark/DM-jump
+ * @date    2024 - 2026
+ * @note    Wheeled-Bipedal Jumping Robot (DM-jump) Firmware
+ *          Target MCU: STM32H723VGT6 | FreeRTOS | Keil MDK-ARM
+ *
+ * Copyright (c) 2024-2026 Trần Nguyên Bình. All rights reserved.
+ * Distributed under the MIT License.
  ******************************************************************************
  * @attention
  * This implementation of Kalman filter can dynamically adjust the dimension and

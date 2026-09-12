@@ -1,17 +1,27 @@
 /**
  ******************************************************************************
- * @file	 user_lib.h
- * @author  Wang Hongxi
- * @version V1.0.0
- * @date    2021/2/18
- * @brief
- ******************************************************************************
- * @attention
+ * @file    user_lib.h
+ * @brief   Th∆∞ vi·ªán c√°c h√†m to√°n h·ªçc, b·ªô l·ªçc d·ªëc ramp, OLS v√† h√†m gi·ªõi h·∫°n (Bilingual EN/VI)
+ *          General Math Utilities, Ramp Filter, OLS Regression, and Saturation Limits
+ * @author  Tr·∫ßn Nguy√™n B√¨nh (trannguyenbinh.shark@gmail.com)
+ * @website https://nguyenbinh-shark.github.io/
+ * @github  https://github.com/nguyenbinh-shark/DM-jump
+ * @date    2024 - 2026
+ * @note    Wheeled-Bipedal Jumping Robot (DM-jump) Firmware
+ *          Target MCU: STM32H723VGT6 | FreeRTOS | Keil MDK-ARM
  *
+ * Copyright (c) 2024-2026 Tr·∫ßn Nguy√™n B√¨nh. All rights reserved.
+ * Distributed under the MIT License.
  ******************************************************************************
  */
+
 #ifndef _USER_LIB_H
 #define _USER_LIB_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "stdint.h"
 #include "main.h"
 #include "cmsis_os.h"
@@ -37,26 +47,24 @@ extern uint8_t GlobalDebugMode;
 #endif
 #endif
 
-/* boolean type definitions */
 #ifndef TRUE
-#define TRUE 1 /**< boolean true  */
+#define TRUE 1
 #endif
 
 #ifndef FALSE
-#define FALSE 0 /**< boolean fails */
+#define FALSE 0
 #endif
 
-/* math relevant */
-/* radian coefficient */
+/* C√°c h·∫±ng s·ªë to√°n h·ªçc / Mathematical constants */
 #ifndef RADIAN_COEF
-#define RADIAN_COEF 57.295779513f
+#define RADIAN_COEF 57.29577951308232f
 #endif
 
-/* circumference ratio */
 #ifndef PI
-#define PI 3.14159265354f
+#define PI 3.141592653589793f
 #endif
 
+/* Macro gi·ªõi h·∫°n kho·∫£ng gi√° tr·ªã / Clamp macro */
 #define VAL_LIMIT(val, min, max) \
     do                           \
     {                            \
@@ -87,61 +95,64 @@ extern uint8_t GlobalDebugMode;
 #define VAL_MIN(a, b) ((a) < (b) ? (a) : (b))
 #define VAL_MAX(a, b) ((a) > (b) ? (a) : (b))
 
+/**
+ * @brief C·∫•u tr√∫c t·∫°o h√†m d·ªëc tƒÉng t·ªëc m∆∞·ª£t / Ramp function generator structure
+ */
 typedef struct
 {
-    float input;        // ‰»Î ˝æ›
-    float out;          // ‰≥ˆ ˝æ›
-    float min_value;    //œﬁ∑˘◊Ó–°÷µ
-    float max_value;    //œﬁ∑˘◊Ó¥Û÷µ
-    float frame_period; // ±º‰º‰∏Ù
+    float input;        /*!< Gi√° tr·ªã m·ª•c ti√™u ƒë·∫ßu v√†o / Target input value */
+    float out;          /*!< Gi√° tr·ªã d·ªëc ƒë·∫ßu ra t·ª©c th·ªùi / Ramp output value */
+    float min_value;    /*!< Gi√° tr·ªã nh·ªè nh·∫•t / Minimum allowed value */
+    float max_value;    /*!< Gi√° tr·ªã l·ªõn nh·∫•t / Maximum allowed value */
+    float frame_period; /*!< Chu k·ª≥ th·ª±c thi / Execution period */
 } ramp_function_source_t;
 
+/**
+ * @brief C·∫•u tr√∫c l·ªçc b√¨nh ph∆∞∆°ng b√© nh·∫•t (OLS) / Ordinary Least Squares filter structure
+ */
 typedef __packed struct
 {
-    uint16_t Order;
+    uint16_t Order;     /*!< B·∫≠c c·ªßa b·ªô l·ªçc / Regression filter order */
     uint32_t Count;
 
     float *x;
     float *y;
 
-    float k;
-    float b;
+    float k;            /*!< H·ªá s·ªë g√≥c (ƒë·∫°o h√†m) / Slope (derivative) */
+    float b;            /*!< H·ªá s·ªë t·ª± do (gi√° tr·ªã l√†m m∆∞·ª£t) / Intercept (smoothed value) */
 
     float StandardDeviation;
 
     float t[4];
 } Ordinary_Least_Squares_t;
 
-//øÏÀŸø™∑Ω
+/* --- C√°c h√†m ti·ªán √≠ch to√°n h·ªçc / Math utility functions --- */
 float Sqrt(float x);
 
-//–±≤®∫Ø ˝≥ı ºªØ
+/* H√†m d·ªëc / Ramp function */
 void ramp_init(ramp_function_source_t *ramp_source_type, float frame_period, float max, float min);
-//–±≤®∫Ø ˝º∆À„
 float ramp_calc(ramp_function_source_t *ramp_source_type, float input);
 
-//æ¯∂‘œﬁ÷∆
+/* H√†m b√£o h√≤a v√† d·∫•u / Saturation and sign functions */
 float abs_limit(float num, float Limit);
-//≈–∂œ∑˚∫≈Œª
 float sign(float value);
-//∏°µ„À¿«¯
-float float_deadband(float Value, float minValue, float maxValue);
-// int26À¿«¯
-int16_t int16_deadline(int16_t Value, int16_t minValue, int16_t maxValue);
-//œﬁ∑˘∫Ø ˝
-float float_constrain(float Value, float minValue, float maxValue);
-//œﬁ∑˘∫Ø ˝
-int16_t int16_constrain(int16_t Value, int16_t minValue, int16_t maxValue);
-//—≠ª∑œﬁ∑˘∫Ø ˝
-float loop_float_constrain(float Input, float minValue, float maxValue);
-//Ω«∂» °„œﬁ∑˘ 180 ~ -180
-float theta_format(float Ang);
 
+/* V√πng ch·∫øt / Deadband */
+float float_deadband(float Value, float minValue, float maxValue);
+int16_t int16_deadline(int16_t Value, int16_t minValue, int16_t maxValue);
+
+/* Kh·ªëng ch·∫ø gi√° tr·ªã trong kho·∫£ng / Constrain functions */
+float float_constrain(float Value, float minValue, float maxValue);
+int16_t int16_constrain(int16_t Value, int16_t minValue, int16_t maxValue);
+float loop_float_constrain(float Input, float minValue, float maxValue);
+
+/* Chu·∫©n h√≥a g√≥c / Angle formatting */
+float theta_format(float Ang);
 int float_rounding(float raw);
 
-//ª°∂»∏Ò ΩªØŒ™-PI~PI
 #define rad_format(Ang) loop_float_constrain((Ang), -PI, PI)
 
+/* B·ªô l·ªçc b√¨nh ph∆∞∆°ng t·ªëi thi·ªÉu OLS / Ordinary Least Squares functions */
 void OLS_Init(Ordinary_Least_Squares_t *OLS, uint16_t order);
 void OLS_Update(Ordinary_Least_Squares_t *OLS, float deltax, float y);
 float OLS_Derivative(Ordinary_Least_Squares_t *OLS, float deltax, float y);
@@ -149,6 +160,11 @@ float OLS_Smooth(Ordinary_Least_Squares_t *OLS, float deltax, float y);
 float Get_OLS_Derivative(Ordinary_Least_Squares_t *OLS);
 float Get_OLS_Smooth(Ordinary_Least_Squares_t *OLS);
 
+/* H√†m b√°m d·ªëc gi·ªõi h·∫°n gia t·ªëc / Slew-rate slope following */
+void slope_following(float *target, float *set, float acc);
 
-void slope_following(float *target,float *set,float acc);
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* _USER_LIB_H */

@@ -1,0 +1,53 @@
+name: Embedded CI & Quality Check
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  code-quality:
+    name: Code Quality & Static Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify repository cleanliness
+        run: |
+          echo "Checking for committed binary artifacts..."
+          FORBIDDEN_FILES=$(find . -type f \( -name "*.o" -o -name "*.d" -o -name "*.crf" -o -name "*.axf" \) | grep -v "Middlewares" || true)
+          if [ -n "$FORBIDDEN_FILES" ]; then
+            echo "ERROR: Found forbidden build artifacts tracked in git:"
+            echo "$FORBIDDEN_FILES"
+            exit 1
+          fi
+          echo "Repository cleanliness check passed: No build artifacts tracked."
+
+      - name: Check author signatures in User/ source files
+        run: |
+          echo "Checking author attribution in User/ files..."
+          MISSING_SIGNATURE=0
+          for file in $(find User -type f \( -name "*.c" -o -name "*.h" \)); do
+            if ! grep -q "Trần Nguyên Bình" "$file" && ! grep -q "Tran Nguyen Binh" "$file"; then
+              echo "Warning/Error: Missing author signature in $file"
+              MISSING_SIGNATURE=1
+            fi
+          done
+          if [ $MISSING_SIGNATURE -eq 1 ]; then
+            echo "Author signature check failed."
+            exit 1
+          fi
+          echo "All User/ files contain valid author signature."
+
+      - name: Lint C/C++ files with cppcheck
+        run: |
+          sudo apt-get update && sudo apt-get install -y cppcheck
+          cppcheck --version
+          # Run cppcheck on User directory
+          cppcheck --enable=warning,style,performance,portability \
+                   --suppress=missingIncludeSystem \
+                   --suppress=unusedFunction \
+                   --error-exitcode=0 \
+                   User/

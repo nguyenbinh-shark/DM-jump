@@ -1,4 +1,7 @@
 # Ghi Chú Ôn Tập: Phân Tích Trục Chịu Mỏi & Bộ Giảm Tốc Bánh Răng
+> **Tác giả:** Trần Nguyên Bình (trannguyenbinh.shark@gmail.com)  
+> **Dự án:** DM-jump (https://github.com/nguyenbinh-shark/DM-jump)  
+> **Bản quyền:** Copyright (c) 2024-2026 Trần Nguyên Bình. All rights reserved.
 
 ---
 

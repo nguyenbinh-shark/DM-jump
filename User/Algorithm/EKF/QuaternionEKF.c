@@ -1,16 +1,16 @@
 /**
  ******************************************************************************
  * @file    QuaternionEKF.c
- * @author  Wang Hongxi
- * @version V1.2.0
- * @date    2022/3/8
- * @brief   attitude update with gyro bias estimate and chi-square test
- ******************************************************************************
- * @attention
- * 1st order LPF transfer function:
- *     1
- *  ———————
- *  as + 1
+ * @brief   Hiện thực thuật toán lọc Quaternion Extended Kalman Filter (EKF)
+ *          kết hợp ước lượng Gyro Bias và kiểm định Chi-Square
+ * @author  Trần Nguyên Bình (trannguyenbinh.shark@gmail.com)
+ * @date    2024 - 2026
+ * @note    Wheeled-Bipedal Jumping Robot (DM-jump) Firmware
+ *          Target MCU: STM32H723VGT6 | FreeRTOS | Keil MDK-ARM
+ * @link    https://github.com/nguyenbinh-shark/DM-jump
+ *
+ * Copyright (c) 2024-2026 Trần Nguyên Bình. All rights reserved.
+ * Distributed under the MIT License.
  ******************************************************************************
  */
 #include "QuaternionEKF.h"
@@ -90,7 +90,7 @@ void IMU_QuaternionEKF_Init(float process_noise1, float process_noise2, float me
 /**
  * @brief Quaternion EKF update
  * @param[in]       gyro x y z in rad/s
- * @param[in]       accel x y z in m/s²
+ * @param[in]       accel x y z in m/s^2
  * @param[in]       update period in s
  */
 void IMU_QuaternionEKF_Update(float gx, float gy, float gz, float ax, float ay, float az, float dt)
@@ -329,14 +329,14 @@ static void IMU_QuaternionEKF_xhatUpdate(KalmanFilter_t *kf)
     kf->MatStatus = Matrix_Transpose(&kf->H, &kf->HT); // z|x => x|z
     kf->temp_matrix.numRows = kf->H.numRows;
     kf->temp_matrix.numCols = kf->Pminus.numCols;
-    kf->MatStatus = Matrix_Multiply(&kf->H, &kf->Pminus, &kf->temp_matrix); // temp_matrix = H·P'(k)
+    kf->MatStatus = Matrix_Multiply(&kf->H, &kf->Pminus, &kf->temp_matrix); // temp_matrix = H * P'(k)
     kf->temp_matrix1.numRows = kf->temp_matrix.numRows;
     kf->temp_matrix1.numCols = kf->HT.numCols;
-    kf->MatStatus = Matrix_Multiply(&kf->temp_matrix, &kf->HT, &kf->temp_matrix1); // temp_matrix1 = H·P'(k)·HT
+    kf->MatStatus = Matrix_Multiply(&kf->temp_matrix, &kf->HT, &kf->temp_matrix1); // temp_matrix1 = H * P'(k) * HT
     kf->S.numRows = kf->R.numRows;
     kf->S.numCols = kf->R.numCols;
-    kf->MatStatus = Matrix_Add(&kf->temp_matrix1, &kf->R, &kf->S); // S = H P'(k) HT + R
-    kf->MatStatus = Matrix_Inverse(&kf->S, &kf->temp_matrix1);     // temp_matrix1 = inv(H·P'(k)·HT + R)
+    kf->MatStatus = Matrix_Add(&kf->temp_matrix1, &kf->R, &kf->S); // S = H * P'(k) * HT + R
+    kf->MatStatus = Matrix_Inverse(&kf->S, &kf->temp_matrix1);     // temp_matrix1 = inv(H * P'(k) * HT + R)
 
     q0 = kf->xhatminus_data[0];
     q1 = kf->xhatminus_data[1];
@@ -364,7 +364,7 @@ static void IMU_QuaternionEKF_xhatUpdate(KalmanFilter_t *kf)
     // chi-square test
     kf->temp_matrix.numRows = kf->temp_vector1.numRows;
     kf->temp_matrix.numCols = 1;
-    kf->MatStatus = Matrix_Multiply(&kf->temp_matrix1, &kf->temp_vector1, &kf->temp_matrix); // temp_matrix = inv(H·P'(k)·HT + R)·(z(k) - h(xhat'(k)))
+    kf->MatStatus = Matrix_Multiply(&kf->temp_matrix1, &kf->temp_vector1, &kf->temp_matrix); // temp_matrix = inv(H * P'(k) * HT + R) * (z(k) - h(xhat'(k)))
     kf->temp_vector.numRows = 1;
     kf->temp_vector.numCols = kf->temp_vector1.numRows;
     kf->MatStatus = Matrix_Transpose(&kf->temp_vector1, &kf->temp_vector); // temp_vector = z(k) - h(xhat'(k))'
@@ -421,7 +421,7 @@ static void IMU_QuaternionEKF_xhatUpdate(KalmanFilter_t *kf)
     // cal kf-gain K
     kf->temp_matrix.numRows = kf->Pminus.numRows;
     kf->temp_matrix.numCols = kf->HT.numCols;
-    kf->MatStatus = Matrix_Multiply(&kf->Pminus, &kf->HT, &kf->temp_matrix); // temp_matrix = P'(k)·HT
+    kf->MatStatus = Matrix_Multiply(&kf->Pminus, &kf->HT, &kf->temp_matrix); // temp_matrix = P'(k) * HT
     kf->MatStatus = Matrix_Multiply(&kf->temp_matrix, &kf->temp_matrix1, &kf->K);
 
     // implement adaptive
@@ -439,7 +439,7 @@ static void IMU_QuaternionEKF_xhatUpdate(KalmanFilter_t *kf)
 
     kf->temp_vector.numRows = kf->K.numRows;
     kf->temp_vector.numCols = 1;
-    kf->MatStatus = Matrix_Multiply(&kf->K, &kf->temp_vector1, &kf->temp_vector); // temp_vector = K(k)·(z(k) - H·xhat'(k))
+    kf->MatStatus = Matrix_Multiply(&kf->K, &kf->temp_vector1, &kf->temp_vector); // temp_vector = K(k) * (z(k) - H * xhat'(k))
 
     // Zero drift correction limit, generally there will not be large drift
     if (QEKF_INS.ConvergeFlag)

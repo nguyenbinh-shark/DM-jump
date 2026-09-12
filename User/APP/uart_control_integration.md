@@ -1,6 +1,9 @@
 # Hướng dẫn tích hợp và sử dụng UART Control
+> **Tác giả:** Trần Nguyên Bình (trannguyenbinh.shark@gmail.com)  
+> **Dự án:** DM-jump (https://github.com/nguyenbinh-shark/DM-jump)  
+> **Bản quyền:** Copyright (c) 2024-2026 Trần Nguyên Bình. All rights reserved.
 
-## Đã hoàn thành:
+---
 ✅ Mở rộng `UartCmd_t` với đầy đủ tham số điều khiển
 ✅ Parse lệnh UART cho: V (velocity), X (position), Y (yaw), H (height), R (roll), J (jump), E (enable)
 ✅ Thêm hàm `uart_data_process()` ánh xạ tương tự PS2

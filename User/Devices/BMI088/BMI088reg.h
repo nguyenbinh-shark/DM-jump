@@ -1,3 +1,18 @@
+/**
+ ******************************************************************************
+ * @file    BMI088reg.h
+ * @brief   Định nghĩa địa chỉ thanh ghi và bitmask cho cảm biến IMU 6-DOF BMI088
+ * @author  Trần Nguyên Bình (trannguyenbinh.shark@gmail.com)
+ * @date    2024 - 2026
+ * @note    Wheeled-Bipedal Jumping Robot (DM-jump) Firmware
+ *          Target MCU: STM32H723VGT6 | FreeRTOS | Keil MDK-ARM
+ * @link    https://github.com/nguyenbinh-shark/DM-jump
+ *
+ * Copyright (c) 2024-2026 Trần Nguyên Bình. All rights reserved.
+ * Distributed under the MIT License.
+ ******************************************************************************
+ */
+
 #ifndef BMI088REG_H
 #define BMI088REG_H
 

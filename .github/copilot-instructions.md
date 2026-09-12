@@ -78,5 +78,9 @@ if (HAL_GetTick() - last_print >= 100) {  // 10Hz
 - [User/APP/INS_task.c](User/APP/INS_task.c): IMU processing and AHRS
 - [User/Controller/controller.h](User/Controller/controller.h): PID implementation
 - [User/Devices/BMI088/](User/Devices/BMI088/): IMU driver
-- [Core/Src/main.c](Core/Src/main.c): Hardware initialization</content>
-<parameter name="filePath">c:\Users\shark\Desktop\DM-jump\.github\copilot-instructions.md
+- [Core/Src/main.c](Core/Src/main.c): Hardware initialization
+- [User/APP/uart_control_task.c](User/APP/uart_control_task.c): UART command interface task
+
+---
+**Project Author & Maintainer**: Trần Nguyên Bình ([trannguyenbinh.shark@gmail.com](mailto:trannguyenbinh.shark@gmail.com))
+**Repository**: [https://github.com/nguyenbinh-shark/DM-jump](https://github.com/nguyenbinh-shark/DM-jump)

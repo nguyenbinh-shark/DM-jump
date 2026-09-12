@@ -1,15 +1,20 @@
 /**
  ******************************************************************************
- * @file	bsp_dwt.c
- * @author  Wang Hongxi
- * @version V1.1.0
- * @date    2022/3/8
- * @brief
- ******************************************************************************
- * @attention
+ * @file    bsp_dwt.c
+ * @brief   Hiện thực bộ đếm chu kỳ xung nhịp Cortex-M DWT độ phân giải micro-giây
+ *          High-Resolution Cortex-M DWT Cycle Counter Implementation (Bilingual EN/VI)
+ * @author  Trần Nguyên Bình (trannguyenbinh.shark@gmail.com)
+ * @website https://nguyenbinh-shark.github.io/
+ * @github  https://github.com/nguyenbinh-shark/DM-jump
+ * @date    2024 - 2026
+ * @note    Wheeled-Bipedal Jumping Robot (DM-jump) Firmware
+ *          Target MCU: STM32H723VGT6 | FreeRTOS | Keil MDK-ARM
  *
+ * Copyright (c) 2024-2026 Trần Nguyên Bình. All rights reserved.
+ * Distributed under the MIT License.
  ******************************************************************************
  */
+
 #include "bsp_dwt.h"
 
 DWT_Time_t SysTime;
@@ -19,15 +24,20 @@ static uint32_t CYCCNT_LAST;
 uint64_t CYCCNT64;
 static void DWT_CNT_Update(void);
 
+/**
+ * @brief  Khởi tạo khối DWT và kích hoạt thanh ghi đếm chu kỳ CYCCNT
+ *         Initialize DWT cycle counter peripheral
+ * @param  CPU_Freq_mHz: Tần số xung nhịp CPU theo MHz (ví dụ: 550 cho STM32H723)
+ */
 void DWT_Init(uint32_t CPU_Freq_mHz)
 {
-    /* Enable DWT tracing unit */
+    /* Bật khối gỡ lỗi và theo dõi DWT / Enable DWT tracing unit */
     CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
 
-    /* Clear DWT CYCCNT register */
+    /* Đặt lại thanh ghi đếm CYCCNT / Reset DWT CYCCNT counter register */
     DWT->CYCCNT = (uint32_t)0u;
 
-    /* Enable Cortex-M DWT CYCCNT counter */
+    /* Kích hoạt bộ đếm CYCCNT / Enable Cortex-M DWT CYCCNT counter */
     DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
 
     CPU_FREQ_Hz = CPU_Freq_mHz * 1000000;
@@ -36,6 +46,12 @@ void DWT_Init(uint32_t CPU_Freq_mHz)
     CYCCNT_RountCount = 0;
 }
 
+/**
+ * @brief  Tính toán khoảng thời gian trôi qua dt (float) tính bằng giây
+ *         Get elapsed time delta dt (float) in seconds
+ * @param  cnt_last: Con trỏ lưu giá trị tick trước đó / Pointer to last tick count
+ * @retval Thời gian trôi qua delta t (giây) / Elapsed time in seconds
+ */
 float DWT_GetDeltaT(uint32_t *cnt_last)
 {
     volatile uint32_t cnt_now = DWT->CYCCNT;
@@ -47,6 +63,12 @@ float DWT_GetDeltaT(uint32_t *cnt_last)
     return dt;
 }
 
+/**
+ * @brief  Tính toán khoảng thời gian dt (double) độ chính xác 64-bit
+ *         Get elapsed time delta dt (double) in seconds with 64-bit precision
+ * @param  cnt_last: Con trỏ lưu giá trị tick trước đó / Pointer to last tick count
+ * @retval Thời gian trôi qua delta t (giây) / Elapsed time in seconds
+ */
 double DWT_GetDeltaT64(uint32_t *cnt_last)
 {
     volatile uint32_t cnt_now = DWT->CYCCNT;
@@ -58,6 +80,10 @@ double DWT_GetDeltaT64(uint32_t *cnt_last)
     return dt;
 }
 
+/**
+ * @brief  Cập nhật cấu trúc thời gian hệ thống SysTime (giây, mili-giây, micro-giây)
+ *         Update global high-resolution system time structure
+ */
 void DWT_SysTimeUpdate(void)
 {
     volatile uint32_t cnt_now = DWT->CYCCNT;
@@ -74,43 +100,57 @@ void DWT_SysTimeUpdate(void)
     SysTime.us = CNT_TEMP3 / CPU_FREQ_Hz_us;
 }
 
+/**
+ * @brief  Lấy mốc thời gian hệ thống theo giây / Get total system timeline in seconds
+ * @retval Thời gian hệ thống (giây) / Timeline in seconds
+ */
 float DWT_GetTimeline_s(void)
 {
     DWT_SysTimeUpdate();
-
-    float DWT_Timelinef32 = SysTime.s + SysTime.ms * 0.001f + SysTime.us * 0.000001f;
-
-    return DWT_Timelinef32;
+    return SysTime.s + SysTime.ms * 0.001f + SysTime.us * 0.000001f;
 }
 
+/**
+ * @brief  Lấy mốc thời gian hệ thống theo mili-giây / Get total system timeline in milliseconds
+ * @retval Thời gian hệ thống (mili-giây) / Timeline in milliseconds
+ */
 float DWT_GetTimeline_ms(void)
 {
     DWT_SysTimeUpdate();
-
-    float DWT_Timelinef32 = SysTime.s * 1000 + SysTime.ms + SysTime.us * 0.001f;
-
-    return DWT_Timelinef32;
+    return SysTime.s * 1000.0f + SysTime.ms + SysTime.us * 0.001f;
 }
 
+/**
+ * @brief  Lấy mốc thời gian hệ thống theo micro-giây / Get total system timeline in microseconds
+ * @retval Thời gian hệ thống 64-bit (micro-giây) / Timeline in microseconds
+ */
 uint64_t DWT_GetTimeline_us(void)
 {
     DWT_SysTimeUpdate();
-
-    uint64_t DWT_Timelinef32 = SysTime.s * 1000000 + SysTime.ms * 1000 + SysTime.us;
-
-    return DWT_Timelinef32;
+    return (uint64_t)SysTime.s * 1000000 + (uint64_t)SysTime.ms * 1000 + SysTime.us;
 }
 
+/**
+ * @brief  Cập nhật trạng thái tràn số của bộ đếm 32-bit CYCCNT
+ *         Handle 32-bit cycle counter overflow
+ */
 static void DWT_CNT_Update(void)
 {
     volatile uint32_t cnt_now = DWT->CYCCNT;
 
     if (cnt_now < CYCCNT_LAST)
-        CYCCNT_RountCount++;// Counter overflow handled by round count
+    {
+        CYCCNT_RountCount++; /* Xử lý tràn bộ đếm 32-bit / Handle 32-bit overflow */
+    }
 
     CYCCNT_LAST = cnt_now;
 }
 
+/**
+ * @brief  Hàm trì hoãn chính xác micro-giây sử dụng chu kỳ CPU (Blocking Delay)
+ *         Blocking delay in seconds using cycle counter
+ * @param  Delay: Thời gian trì hoãn tính bằng giây / Delay duration in seconds
+ */
 void DWT_Delay(float Delay)
 {
     uint32_t tickstart = DWT->CYCCNT;
