@@ -417,3 +417,5 @@ void slope_following(float *target, float *set, float acc)
             *set = *target;
     }
 }
+
+/* End of file user_lib.c */
